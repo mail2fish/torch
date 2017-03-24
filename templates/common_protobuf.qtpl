@@ -1,0 +1,11 @@
+{% func GenerateCommonProtobuf(prefix string, appPath string) %}
+syntax = "proto3";
+{% if len(prefix)>0 %}
+package {%s prefix%}_pstructs;
+
+{% else %}
+package pstructs;
+
+{% endif %}
+
+{% endfunc %}

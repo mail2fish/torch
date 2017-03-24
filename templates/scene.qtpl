@@ -1,0 +1,74 @@
+{% import "strings" %}
+{% func GenerateScene(name string) %}
+
+package scenes
+
+import (
+	"torch/game_server"
+	"torch/scene_server"
+	"errors"
+	"fmt"
+	"sync"
+	"time"
+
+
+	"gopkg.in/mgo.v2/bson"
+)
+
+const ROUND_DURATION = 1
+
+type {%s strings.Title(name) %}Scene struct {
+	id         bson.ObjectId
+	rp game_server.Responser
+
+	startedAt       int64
+	lastProcessTick int64
+	rwMu            sync.RWMutex
+}
+
+
+
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) Id() bson.ObjectId {
+	return {%s strings.ToLower(name) %}.id
+}
+
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) Start(rp game_server.Responser, args ...interface{}) (bson.ObjectId, error) {
+
+	if len(args) > 0 {
+		u := args[0].(*structs.User)
+		{%s strings.ToLower(name) %}.id = bson.NewObjectId()
+		{%s strings.ToLower(name) %}.startedAt = time.Now().UnixNano()
+		{%s strings.ToLower(name) %}.rp = rp
+		return {%s strings.ToLower(name) %}.id, nil
+
+	}
+	return bson.NewObjectId(), errors.New("Not found user")
+}
+
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) End(rp game_server.Responser) (bool, error) {
+	return false, nil
+}
+
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) WhetherEndScene() bool {
+	runTime := time.Now().UnixNano() - {%s strings.ToLower(name) %}.startedAt
+	if time.Duration(runTime) > (ROUND_DURATION * time.Minute) {
+
+		return true
+	}
+	return false
+}
+
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) ProcessTick(t time.Time) {
+
+	{%s strings.ToLower(name) %}.lastProcessTick = t.UnixNano()
+
+}
+
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) ProcessSignal(signal int) {
+}
+
+func ({%s strings.ToLower(name) %} *{%s name %}Scene) ProcessCmd(cmd *scene_server.Cmd) {
+	switch cmd.Paramater.(type) {
+	}
+}
+{% endfunc %}

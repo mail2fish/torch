@@ -1,0 +1,64 @@
+{% func GenerateExampleHandler(prefix string, appPath string, name string) %}
+{% if len(prefix)>0 %}
+package 	{%s prefix%}_handlers
+
+import (
+	"{%s appPath %}/game/{%s prefix%}_global"
+    "{%s appPath %}/game/{%s prefix%}_pstructs"
+   	"{%s appPath %}/game/{%s prefix%}_structs"
+
+	
+	"torch/game_server"
+
+	"github.com/go-playground/log"
+
+)   
+
+
+// rp is GameClienterResponser
+func {%s name %}Handler(s *game_server.RequestSession, rp game_server.Responser, rqParams *{%s prefix%}_pstructs.RqExample) {
+
+    log.Debug({%s prefix %}_global.MDB)
+
+	log.Info("Example handler show")
+    ex:={%s prefix %}_structs.Example{Name:"struct example"}
+    log.Debug(ex)
+	rp.Write(game_server.RK_WEBSOCKET, &{%s prefix%}_pstructs.RpExample{Name:"example"})
+
+}
+
+
+{% else %}
+package 	handlers
+
+import (
+	"{%s appPath %}/game/global"
+    "{%s appPath %}/game/pstructs"
+   	"{%s appPath %}/game/structs"
+
+	
+	"torch/game_server"
+
+	"github.com/go-playground/log"
+
+)   
+
+
+// rp is GameClienterResponser
+func {%s name %}Handler(s *game_server.RequestSession, rp game_server.Responser, rqParams *pstructs.RqExample) {
+
+    log.Debug(global.MDB)
+
+	log.Info("Example handler show")
+    ex:=_structs.Example{Name:"struct example"}
+    log.Debug(ex)
+	rp.Write(game_server.RK_WEBSOCKET, pstructs.RpExample{Name:"example"})
+
+}
+
+
+{% endif %}
+
+
+
+{% endfunc %}

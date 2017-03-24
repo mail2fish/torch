@@ -1,0 +1,22 @@
+{% func GenerateResponseProtobuf(prefix string, appPath string) %}
+syntax = "proto3";
+{% if len(prefix)>0 %}
+package {%s prefix%}_pstructs;
+import "common.proto";
+
+// id 5001
+message RpExample{
+    string name=1;
+}
+
+{% else %}
+package pstructs;
+import "common.proto";
+
+// id 5001
+message RpExample{
+    string name=1;
+}
+
+{% endif %}
+{% endfunc %}

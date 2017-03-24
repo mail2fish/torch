@@ -1,0 +1,15 @@
+{% func GenerateMain(appPath string) %}
+
+
+package main
+
+import "{%s appPath %}/cmd/server/cmd"
+
+func main() {
+	cmd.Execute()
+
+}
+
+
+
+{% endfunc %}

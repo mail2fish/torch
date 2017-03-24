@@ -1,0 +1,39 @@
+{% func GenerateBindingHandlers(prefix string, appPath string) %}
+{% if len(prefix)>0 %}
+package 	{%s prefix%}_handlers
+
+import (
+	"{%s appPath %}/game/{%s prefix%}_global"
+)   
+
+
+func BindRequestHandlers() {
+
+	// 不要用大于 5000 的数字
+	{%s prefix%}_global.GS.BindRequestHandler(1, "request login ", ExampleHandler, true)
+
+
+
+}
+
+{% else %}
+package 	handlers
+
+import (
+	"{%s appPath %}/game/global"
+)   
+
+
+func BindRequestHandlers() {
+
+	// 不要用小于 5001 的数字
+	global.GS.BindRequestHandler(5001, "request login ", ExampleHandler, true)
+
+
+
+}
+{% endif %}
+
+
+
+{% endfunc %}

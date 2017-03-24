@@ -1,0 +1,22 @@
+{% func GenerateExampleRequestProtobuf(prefix string, appPath string) %}
+syntax = "proto3";
+{% if len(prefix)>0 %}
+package {%s prefix%}_pstructs;
+import "common.proto";
+
+// request id 1
+message RqExample{
+    string name=1;
+}
+
+{% else %}
+package pstructs;
+import "common.proto";
+
+// request id 1
+message RqExample{
+    string name=1;
+}
+
+{% endif %}
+{% endfunc %}

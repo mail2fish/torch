@@ -1,0 +1,103 @@
+{% func GenerateServerCmd(prefix string, appPath string, basename string) %}
+package cmd
+
+import (
+{% if len(prefix)>0 %}
+	"{%s appPath %}/game/{%s prefix%}_global"
+	"{%s appPath %}/game/{%s prefix%}_handlers"
+{% else %}
+    "{%s appPath %}/game/global"
+	"{%s appPath %}/game/handlers"
+{% endif %}
+	"torch/game_server"
+	"torch/log_handler"
+	"fmt"
+	"net/http"
+	"sync"
+
+	"github.com/gin-gonic/gin"
+
+	"torch/utilities"
+
+	"github.com/go-playground/log"
+	"github.com/go-playground/log/handlers/console"
+	"github.com/tidwall/buntdb"
+	"github.com/spf13/cobra"
+	"github.com/gorilla/websocket"
+)
+
+var serverCmd = &cobra.Command{
+    Use:   "server",
+	Short: "It start the game server application.",
+	Long:  `It start the game server application.`,
+    	
+    Run: func(cmd *cobra.Command, args []string) {
+        startServer()
+    },
+}
+
+var wsupgrader = websocket.Upgrader{
+	ReadBufferSize:  2048,
+	WriteBufferSize: 2048,
+	CheckOrigin:     func(r *http.Request) bool { return true },
+}
+
+func startServer(){
+
+	utilities.InitMysqlDB()
+
+	var err error
+{% if len(prefix)>0 %}
+	if {%s prefix %}_global.BDB, err = buntdb.Open(":memory:"); err != nil {
+{% else %}
+	if global.BDB, err = buntdb.Open(":memory:"); err != nil {
+{% endif %}
+		panic("Can not create buntdb")
+	}
+
+	cLog := console.New()
+
+	log.RegisterHandler(cLog, log.DebugLevel, log.InfoLevel)
+	log.RegisterHandler(&log_handler.PlayLogHandler{}, log.NoticeLevel)
+
+	var wg sync.WaitGroup
+
+{% if len(prefix)>0 %}
+	{%s prefix %}_global.GS = game_server.NewGameServer(&wg)
+	{%s prefix %}_handlers.BindRequestHandlers()
+
+{% else %}
+	global.GS = game_server.NewGameServer(&wg)
+	handlers.BindRequestHandlers()
+
+{% endif %}
+	
+
+	r := gin.Default()
+
+	r.GET("/{%s basename %}_socket", func(c *gin.Context) {
+		func(w http.ResponseWriter, r *http.Request) {
+			conn, err := wsupgrader.Upgrade(w, r, nil)
+
+			if err != nil {
+				fmt.Println("Failed to set websocket upgrade: %+v", err)
+				return
+			}
+{% if len(prefix)>0 %}
+
+			game_server.NewWebSocketGameClient(conn, {%s prefix %}_global.GS)
+{% else %}
+			game_server.NewWebSocketGameClient(conn, global.GS)
+
+{% endif %}
+
+		}(c.Writer, c.Request)
+	})
+
+	r.Run(":8088")
+	wg.Wait()
+
+}
+
+
+{% endfunc %}

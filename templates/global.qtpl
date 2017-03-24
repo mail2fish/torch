@@ -1,0 +1,24 @@
+{% func GenerateGlobal(prefix string) %}
+{% if len(prefix)>0 %}
+package {%s prefix%}_global
+{% else %}
+package global
+{% endif %}
+
+import (
+	"torch/game_server"
+
+	"github.com/jinzhu/gorm"
+	"github.com/tidwall/buntdb"
+)
+
+var (
+	//GS Global GameServer pointer
+	GS *game_server.GameServer
+	//BDB Global buntdb pointer
+	BDB *buntdb.DB
+
+	MDB *gorm.DB
+)
+
+{% endfunc %}

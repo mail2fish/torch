@@ -1,0 +1,13 @@
+{% func GenerateExampleStruct(prefix string, appPath string) %}
+{% if len(prefix)>0 %}
+package 	{%s prefix%}_structs
+{% else %}
+package 	structs
+{% endif %}
+
+type Example struct{
+    Name string
+
+}
+
+{% endfunc %}

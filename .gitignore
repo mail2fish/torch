@@ -22,3 +22,6 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+#common
+*.DS_Store

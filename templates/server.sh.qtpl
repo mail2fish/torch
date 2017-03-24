@@ -1,0 +1,4 @@
+{% func GenerateServerScript(cmd string) %}#!/bin/bash
+echo GOPATH: ${GOPATH}
+{%s cmd %}
+{% endfunc %}
