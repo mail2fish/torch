@@ -13,7 +13,7 @@ type CmdType uint16
 type Scener interface {
 	Id() bson.ObjectId
 
-	// Start is called to start  runing GameObject in the Scener
+	// Start is called to start  running GameObject in the Scener
 	Start(game_server.Responser, ...interface{}) (bson.ObjectId, error)
 
 	// End is called to stop the Scener
