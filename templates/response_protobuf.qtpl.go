@@ -35,54 +35,88 @@ package `)
 import "common.proto";
 
 // id 5001
+message ResponseHeader{
+  int64 sentAt = 1;
+  uint32 requestSqNumber=2;
+}
+
+// id 5002
+message RpRequestReceived{
+  ResponseHeader header=1;
+}
+
+// id 5003
+message RpRequestComplete{
+   ResponseHeader header=1;
+}
+
+// id 5004
 message RpExample{
-    string name=1;
+    ResponseHeader header=1;
+    string name=2;
 }
 
 `)
-		//line response_protobuf.qtpl:12
+		//line response_protobuf.qtpl:29
 	} else {
-		//line response_protobuf.qtpl:12
+		//line response_protobuf.qtpl:29
 		qw422016.N().S(`
 package pstructs;
 import "common.proto";
 
 // id 5001
+message ResponseHeader{
+  int64 sentAt = 1;
+  uint32 sequenceNumber=2;
+}
+
+// id 5002
+message RpRequestReceived{
+  ResponseHeader header=1;
+}
+
+// id 5003
+message RpRequestComplete{
+   ResponseHeader header=1;
+}
+
+// id 5004
 message RpExample{
-    string name=1;
+    ResponseHeader header=1;
+    string name=2;
 }
 
 `)
-		//line response_protobuf.qtpl:21
+		//line response_protobuf.qtpl:55
 	}
-	//line response_protobuf.qtpl:21
+	//line response_protobuf.qtpl:55
 	qw422016.N().S(`
 `)
-//line response_protobuf.qtpl:22
+//line response_protobuf.qtpl:56
 }
 
-//line response_protobuf.qtpl:22
+//line response_protobuf.qtpl:56
 func WriteGenerateResponseProtobuf(qq422016 qtio422016.Writer, prefix string, appPath string) {
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	StreamGenerateResponseProtobuf(qw422016, prefix, appPath)
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	qt422016.ReleaseWriter(qw422016)
-//line response_protobuf.qtpl:22
+//line response_protobuf.qtpl:56
 }
 
-//line response_protobuf.qtpl:22
+//line response_protobuf.qtpl:56
 func GenerateResponseProtobuf(prefix string, appPath string) string {
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	WriteGenerateResponseProtobuf(qb422016, prefix, appPath)
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	qs422016 := string(qb422016.B)
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line response_protobuf.qtpl:22
+	//line response_protobuf.qtpl:56
 	return qs422016
-//line response_protobuf.qtpl:22
+//line response_protobuf.qtpl:56
 }

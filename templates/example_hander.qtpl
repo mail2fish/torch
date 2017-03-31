@@ -59,6 +59,9 @@ func {%s name %}Handler(s *game_server.RequestSession, rp game_server.Responser,
 
 {% endif %}
 
+func init() {
+	addHandler(1, "request example ", ExampleHandler, true)
 
+}
 
 {% endfunc %}

@@ -157,34 +157,37 @@ func `)
 	//line example_hander.qtpl:60
 	qw422016.N().S(`
 
+func init() {
+	addHandler(1, "request example ", ExampleHandler, true)
 
+}
 
 `)
-//line example_hander.qtpl:64
+//line example_hander.qtpl:67
 }
 
-//line example_hander.qtpl:64
+//line example_hander.qtpl:67
 func WriteGenerateExampleHandler(qq422016 qtio422016.Writer, prefix string, appPath string, name string) {
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	StreamGenerateExampleHandler(qw422016, prefix, appPath, name)
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	qt422016.ReleaseWriter(qw422016)
-//line example_hander.qtpl:64
+//line example_hander.qtpl:67
 }
 
-//line example_hander.qtpl:64
+//line example_hander.qtpl:67
 func GenerateExampleHandler(prefix string, appPath string, name string) string {
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	WriteGenerateExampleHandler(qb422016, prefix, appPath, name)
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	qs422016 := string(qb422016.B)
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line example_hander.qtpl:64
+	//line example_hander.qtpl:67
 	return qs422016
-//line example_hander.qtpl:64
+//line example_hander.qtpl:67
 }

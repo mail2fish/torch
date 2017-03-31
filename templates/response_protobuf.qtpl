@@ -5,8 +5,25 @@ package {%s prefix%}_pstructs;
 import "common.proto";
 
 // id 5001
+message ResponseHeader{
+  int64 sentAt = 1;
+  uint32 requestSqNumber=2;
+}
+
+// id 5002
+message RpRequestReceived{
+  ResponseHeader header=1;
+}
+
+// id 5003
+message RpRequestComplete{
+   ResponseHeader header=1;
+}
+
+// id 5004
 message RpExample{
-    string name=1;
+    ResponseHeader header=1;
+    string name=2;
 }
 
 {% else %}
@@ -14,8 +31,25 @@ package pstructs;
 import "common.proto";
 
 // id 5001
+message ResponseHeader{
+  int64 sentAt = 1;
+  uint32 sequenceNumber=2;
+}
+
+// id 5002
+message RpRequestReceived{
+  ResponseHeader header=1;
+}
+
+// id 5003
+message RpRequestComplete{
+   ResponseHeader header=1;
+}
+
+// id 5004
 message RpExample{
-    string name=1;
+    ResponseHeader header=1;
+    string name=2;
 }
 
 {% endif %}

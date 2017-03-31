@@ -66,7 +66,7 @@ func createDirectories(app_path string, gopathSrc string) {
 		"includes",
 	}
 	subDirs := map[string][]string{
-		"game": []string{"handlers", "pstructs", "scenes", "structs", "global"},
+		"game": []string{"handlers", "pstructs", "scenes", "structs", "global", "middlewares"},
 	}
 
 	for _, dir := range dirs {
@@ -168,11 +168,24 @@ func generateServerCmd(appPath string, gopathSrc string) {
 
 	writeToFile(fpath, func(f *os.File) { templates.WriteGenerateExampleStruct(f, prefix, appPath) }, 0644)
 
+	fpath = path.Join(gopathSrc, appPath, "game", structsDir, "protobuf_id_map.go")
+
+	writeToFile(fpath, func(f *os.File) { templates.WriteGenerateIdMapStruct(f, prefix, appPath) }, 0644)
+
 	fpath = path.Join(gopathSrc, appPath, "bin", fmt.Sprintf("%s.sh", appPath))
 
 	cmd := fmt.Sprintf("go run %s $@", path.Join("${GOPATH}", "src", appPath, "cmd", "server", appPath+".go"))
 
 	writeToFile(fpath, func(f *os.File) { templates.WriteGenerateServerScript(f, cmd) }, 0755)
+
+	fpath = path.Join(gopathSrc, appPath, "bin", "generate_protobuf_go_files.sh")
+
+	writeToFile(fpath, func(f *os.File) {
+		templates.WriteGenerateProtobufGofile(f,
+			path.Join("${GOPATH}", path.Join("src", appPath, "game", pstructsDir)),
+			protobufDir,
+			path.Join(protobufDir, "*.proto"))
+	}, 0755)
 
 	generateProtobufGoFiles(path.Join(gopathSrc, appPath, "game", pstructsDir), protobufDir)
 
@@ -180,8 +193,36 @@ func generateServerCmd(appPath string, gopathSrc string) {
 
 type templateWrite func(*os.File)
 
+var overwriteFlag string
+
 func writeToFile(fpath string, fun templateWrite, mode os.FileMode) {
-	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_CREATE, mode)
+Here:
+	switch overwriteFlag {
+	case "Y":
+	case "N":
+		if _, err := os.Stat(fpath); !os.IsNotExist(err) {
+			return
+		}
+	default:
+		if _, err := os.Stat(fpath); !os.IsNotExist(err) {
+			fmt.Println("The file path: ", fpath, " is exist. Do you want to overwrite it? (n/N/y/Y)")
+			if _, err := fmt.Scanf("%s", &overwriteFlag); err != nil {
+				fmt.Printf("%s\n", err)
+				return
+			}
+
+			switch overwriteFlag {
+			case "n", "N":
+				return
+			case "y", "Y":
+			default:
+				goto Here
+			}
+		}
+	}
+
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
+
 	defer f.Close()
 	if err != nil {
 		fmt.Println("Failed to generate the file:", fpath)

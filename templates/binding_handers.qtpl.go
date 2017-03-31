@@ -44,78 +44,100 @@ import (
 		qw422016.N().S(`_global"
 )   
 
+type handler struct {
+	id         uint16
+	name       string
+	fun        interface{}
+	singleMode bool
+}
+
+var handlers = []*handler{}
+
 
 func BindRequestHandlers() {
 
-	// 不要用大于 5000 的数字
-	`)
-		//line binding_handers.qtpl:13
+	for _, handler := range handlers {
+		`)
+		//line binding_handers.qtpl:22
 		qw422016.E().S(prefix)
-		//line binding_handers.qtpl:13
-		qw422016.N().S(`_global.GS.BindRequestHandler(1, "request login ", ExampleHandler, true)
+		//line binding_handers.qtpl:22
+		qw422016.N().S(`_global.GS.BindRequestHandler(handler.id, handler.name, handler.fun, handler.singleMode)
+	}
+}
 
-
-
+func addHandler(id uint16, name string, fun interface{}, singleMode bool) {
+	handlers = append(handlers, &handler{id: id, name: name, fun: fun, singleMode: singleMode})
 }
 
 `)
-		//line binding_handers.qtpl:19
+		//line binding_handers.qtpl:30
 	} else {
-		//line binding_handers.qtpl:19
+		//line binding_handers.qtpl:30
 		qw422016.N().S(`
 package 	handlers
 
 import (
 	"`)
-		//line binding_handers.qtpl:23
+		//line binding_handers.qtpl:34
 		qw422016.E().S(appPath)
-		//line binding_handers.qtpl:23
+		//line binding_handers.qtpl:34
 		qw422016.N().S(`/game/global"
 )   
+
+type handler struct {
+	id         uint16
+	name       string
+	fun        interface{}
+	singleMode bool
+}
+
+var handlers = []*handler{}
 
 
 func BindRequestHandlers() {
 
-	// 不要用小于 5001 的数字
-	global.GS.BindRequestHandler(5001, "request login ", ExampleHandler, true)
+	for _, handler := range handlers {
+		global.GS.BindRequestHandler(handler.id, handler.name, handler.fun, handler.singleMode)
+	}
+}
 
-
-
+func addHandler(id uint16, name string, fun interface{}, singleMode bool) {
+	handlers = append(handlers, &handler{id: id, name: name, fun: fun, singleMode: singleMode})
 }
 `)
-		//line binding_handers.qtpl:35
+		//line binding_handers.qtpl:57
 	}
-	//line binding_handers.qtpl:35
+	//line binding_handers.qtpl:57
 	qw422016.N().S(`
 
 
 
 `)
-//line binding_handers.qtpl:39
+//line binding_handers.qtpl:61
 }
 
-//line binding_handers.qtpl:39
+//line binding_handers.qtpl:61
 func WriteGenerateBindingHandlers(qq422016 qtio422016.Writer, prefix string, appPath string) {
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	StreamGenerateBindingHandlers(qw422016, prefix, appPath)
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	qt422016.ReleaseWriter(qw422016)
-//line binding_handers.qtpl:39
+//line binding_handers.qtpl:61
 }
 
-//line binding_handers.qtpl:39
+//line binding_handers.qtpl:61
 func GenerateBindingHandlers(prefix string, appPath string) string {
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	WriteGenerateBindingHandlers(qb422016, prefix, appPath)
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	qs422016 := string(qb422016.B)
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line binding_handers.qtpl:39
+	//line binding_handers.qtpl:61
 	return qs422016
-//line binding_handers.qtpl:39
+//line binding_handers.qtpl:61
 }

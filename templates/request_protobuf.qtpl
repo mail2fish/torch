@@ -4,19 +4,22 @@ syntax = "proto3";
 package {%s prefix%}_pstructs;
 import "common.proto";
 
-// request id 1
-message RqExample{
-    string name=1;
-}
-
 {% else %}
+
 package pstructs;
 import "common.proto";
 
-// request id 1
-message RqExample{
-    string name=1;
+{% endif %}
+
+message RequestHeader{
+    int64 sentAt = 1;    
+    uint32 requestSqNumber = 2;
 }
 
-{% endif %}
+// request id 1
+message RqExample{
+    RequestHeader header=1;
+    string name=2;
+}
+
 {% endfunc %}

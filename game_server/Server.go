@@ -162,10 +162,14 @@ func (s *GameServer) RequestHandlers(id uint16, name string, handler interface{}
 
 }
 func (s *GameServer) BindRequestHandler(id uint16, name string, handler interface{}, singleMode bool) {
+	if id > 5000 {
+		log.Error("The request handler id should not greater than 5000, the id is %d %s", id, name)
+		return
+	}
 	if _, ok := s.requests[id]; ok {
 		log.Error("There were a handler for %d %s", id, name)
 	} else {
-
+		fmt.Printf("Binding request handler %d for %s\n", id, name)
 		hParam, hFun := ParseRequestHandlerFun(handler)
 
 		s.requests[id] = FunMap{ID: id,

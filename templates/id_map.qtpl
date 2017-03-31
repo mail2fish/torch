@@ -1,0 +1,51 @@
+{% func GenerateIdMapStruct(prefix string, appPath string) %}
+{% if len(prefix)>0 %}
+package 	{%s prefix%}_structs
+{% else %}
+package 	structs
+{% endif %}
+
+import (
+{% if len(prefix)>0 %}
+    "{%s appPath %}/game/{%s prefix%}_pstructs"
+{% else %}
+    "{%s appPath %}/game/pstructs"
+{% endif %}
+	"torch/game_server"
+)
+
+// IDMap  Map a pstructs to an int number
+type IDMap struct {
+	ID      uint16
+	Typ     interface{}
+	FillFun interface{}
+	Asap    bool
+}
+
+// IDMapList an IDMap list
+var IDMapList []IDMap
+
+func init() {
+	IDMapList = []IDMap{}
+
+	// 从5000 开始
+{% if len(prefix)>0 %}
+    IDMapList = append(IDMapList, IDMap{5001, {%s prefix%}_pstructs.ResponseHeader{}, nil, true})
+   	IDMapList = append(IDMapList, IDMap{5002, {%s prefix%}_pstructs.RpRequestReceived{}, nil, true})
+   	IDMapList = append(IDMapList, IDMap{5003, {%s prefix%}_pstructs.RpRequestComplete{}, nil, true})
+   	IDMapList = append(IDMapList, IDMap{5004, {%s prefix%}_pstructs.RpExample{}, nil, true})
+{% else %}
+    IDMapList = append(IDMapList, IDMap{5001, pstructs.ResponseHeader{}, nil, true})
+   	IDMapList = append(IDMapList, IDMap{5002, pstructs.RpRequestReceived{}, nil, true})
+   	IDMapList = append(IDMapList, IDMap{5003, pstructs.RpRequestComplete{}, nil, true})
+   	IDMapList = append(IDMapList, IDMap{5004, pstructs.RpExample{}, nil, true})
+{% endif %}
+
+
+
+	for _, m := range IDMapList {
+		game_server.GameProtobufStructTypes.BindProtobufStructType(m.ID, m.Typ, m.FillFun, m.Asap)
+	}
+
+}
+{% endfunc %}
