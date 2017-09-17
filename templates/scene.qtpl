@@ -1,13 +1,16 @@
 {% import "strings" %}
-{% func GenerateScene(name string) %}
+{% func GenerateScene(prefix string, name string) %}
 
-package scenes
+{% if len(prefix)>0 %}
+package 	{%s prefix%}_scenes
+{% else %}
+package 	structs
+{% endif %}
 
 import (
 	"torch/game_server"
 	"torch/scene_server"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
@@ -15,7 +18,8 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const ROUND_DURATION = 1
+const RoundDuration time.Duration = 1 * time.Minute
+const TickInterval time.Duration = 20 * time.Millisecond
 
 type {%s strings.Title(name) %}Scene struct {
 	id         bson.ObjectId
@@ -32,17 +36,16 @@ func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) Id() bson.O
 	return {%s strings.ToLower(name) %}.id
 }
 
-func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) Start(rp game_server.Responser, args ...interface{}) (bson.ObjectId, error) {
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) Start(rp game_server.Responser, args ...interface{}) (bson.ObjectId, time.Duration, error) {
 
 	if len(args) > 0 {
-		u := args[0].(*structs.User)
 		{%s strings.ToLower(name) %}.id = bson.NewObjectId()
 		{%s strings.ToLower(name) %}.startedAt = time.Now().UnixNano()
 		{%s strings.ToLower(name) %}.rp = rp
-		return {%s strings.ToLower(name) %}.id, nil
+		return {%s strings.ToLower(name) %}.id, TickInterval, nil
 
 	}
-	return bson.NewObjectId(), errors.New("Not found user")
+	return bson.NewObjectId(),TickInterval, errors.New("Not found user")
 }
 
 func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) End(rp game_server.Responser) (bool, error) {
@@ -51,7 +54,7 @@ func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) End(rp game
 
 func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) WhetherEndScene() bool {
 	runTime := time.Now().UnixNano() - {%s strings.ToLower(name) %}.startedAt
-	if time.Duration(runTime) > (ROUND_DURATION * time.Minute) {
+	if time.Duration(runTime) > RoundDuration{
 
 		return true
 	}
@@ -67,7 +70,7 @@ func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) ProcessTick
 func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) ProcessSignal(signal int) {
 }
 
-func ({%s strings.ToLower(name) %} *{%s name %}Scene) ProcessCmd(cmd *scene_server.Cmd) {
+func ({%s strings.ToLower(name) %} *{%s strings.Title(name) %}Scene) ProcessCmd(cmd *scene_server.Cmd) {
 	switch cmd.Paramater.(type) {
 	}
 }

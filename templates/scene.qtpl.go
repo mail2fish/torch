@@ -21,17 +21,36 @@ var (
 )
 
 //line scene.qtpl:2
-func StreamGenerateScene(qw422016 *qt422016.Writer, name string) {
+func StreamGenerateScene(qw422016 *qt422016.Writer, prefix string, name string) {
 	//line scene.qtpl:2
 	qw422016.N().S(`
 
-package scenes
+`)
+	//line scene.qtpl:4
+	if len(prefix) > 0 {
+		//line scene.qtpl:4
+		qw422016.N().S(`
+package 	`)
+		//line scene.qtpl:5
+		qw422016.E().S(prefix)
+		//line scene.qtpl:5
+		qw422016.N().S(`_scenes
+`)
+		//line scene.qtpl:6
+	} else {
+		//line scene.qtpl:6
+		qw422016.N().S(`
+package 	structs
+`)
+		//line scene.qtpl:8
+	}
+	//line scene.qtpl:8
+	qw422016.N().S(`
 
 import (
 	"torch/game_server"
 	"torch/scene_server"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
@@ -39,12 +58,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const ROUND_DURATION = 1
+const RoundDuration time.Duration = 1 * time.Minute
+const TickInterval time.Duration = 20 * time.Millisecond
 
 type `)
-	//line scene.qtpl:20
+	//line scene.qtpl:24
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:20
+	//line scene.qtpl:24
 	qw422016.N().S(`Scene struct {
 	id         bson.ObjectId
 	rp game_server.Responser
@@ -57,85 +77,84 @@ type `)
 
 
 func (`)
-	//line scene.qtpl:31
+	//line scene.qtpl:35
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:31
+	//line scene.qtpl:35
 	qw422016.N().S(` *`)
-	//line scene.qtpl:31
+	//line scene.qtpl:35
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:31
+	//line scene.qtpl:35
 	qw422016.N().S(`Scene) Id() bson.ObjectId {
 	return `)
-	//line scene.qtpl:32
+	//line scene.qtpl:36
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:32
+	//line scene.qtpl:36
 	qw422016.N().S(`.id
 }
 
 func (`)
-	//line scene.qtpl:35
+	//line scene.qtpl:39
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:35
+	//line scene.qtpl:39
 	qw422016.N().S(` *`)
-	//line scene.qtpl:35
+	//line scene.qtpl:39
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:35
-	qw422016.N().S(`Scene) Start(rp game_server.Responser, args ...interface{}) (bson.ObjectId, error) {
+	//line scene.qtpl:39
+	qw422016.N().S(`Scene) Start(rp game_server.Responser, args ...interface{}) (bson.ObjectId, time.Duration, error) {
 
 	if len(args) > 0 {
-		u := args[0].(*structs.User)
 		`)
-	//line scene.qtpl:39
+	//line scene.qtpl:42
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:39
+	//line scene.qtpl:42
 	qw422016.N().S(`.id = bson.NewObjectId()
 		`)
-	//line scene.qtpl:40
+	//line scene.qtpl:43
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:40
+	//line scene.qtpl:43
 	qw422016.N().S(`.startedAt = time.Now().UnixNano()
 		`)
-	//line scene.qtpl:41
+	//line scene.qtpl:44
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:41
+	//line scene.qtpl:44
 	qw422016.N().S(`.rp = rp
 		return `)
-	//line scene.qtpl:42
+	//line scene.qtpl:45
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:42
-	qw422016.N().S(`.id, nil
+	//line scene.qtpl:45
+	qw422016.N().S(`.id, TickInterval, nil
 
 	}
-	return bson.NewObjectId(), errors.New("Not found user")
+	return bson.NewObjectId(),TickInterval, errors.New("Not found user")
 }
 
 func (`)
-	//line scene.qtpl:48
+	//line scene.qtpl:51
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:48
+	//line scene.qtpl:51
 	qw422016.N().S(` *`)
-	//line scene.qtpl:48
+	//line scene.qtpl:51
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:48
+	//line scene.qtpl:51
 	qw422016.N().S(`Scene) End(rp game_server.Responser) (bool, error) {
 	return false, nil
 }
 
 func (`)
-	//line scene.qtpl:52
+	//line scene.qtpl:55
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:52
+	//line scene.qtpl:55
 	qw422016.N().S(` *`)
-	//line scene.qtpl:52
+	//line scene.qtpl:55
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:52
+	//line scene.qtpl:55
 	qw422016.N().S(`Scene) WhetherEndScene() bool {
 	runTime := time.Now().UnixNano() - `)
-	//line scene.qtpl:53
+	//line scene.qtpl:56
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:53
+	//line scene.qtpl:56
 	qw422016.N().S(`.startedAt
-	if time.Duration(runTime) > (ROUND_DURATION * time.Minute) {
+	if time.Duration(runTime) > RoundDuration{
 
 		return true
 	}
@@ -143,72 +162,72 @@ func (`)
 }
 
 func (`)
-	//line scene.qtpl:61
+	//line scene.qtpl:64
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:61
+	//line scene.qtpl:64
 	qw422016.N().S(` *`)
-	//line scene.qtpl:61
+	//line scene.qtpl:64
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:61
+	//line scene.qtpl:64
 	qw422016.N().S(`Scene) ProcessTick(t time.Time) {
 
 	`)
-	//line scene.qtpl:63
+	//line scene.qtpl:66
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:63
+	//line scene.qtpl:66
 	qw422016.N().S(`.lastProcessTick = t.UnixNano()
 
 }
 
 func (`)
-	//line scene.qtpl:67
+	//line scene.qtpl:70
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:67
+	//line scene.qtpl:70
 	qw422016.N().S(` *`)
-	//line scene.qtpl:67
+	//line scene.qtpl:70
 	qw422016.E().S(strings.Title(name))
-	//line scene.qtpl:67
+	//line scene.qtpl:70
 	qw422016.N().S(`Scene) ProcessSignal(signal int) {
 }
 
 func (`)
-	//line scene.qtpl:70
+	//line scene.qtpl:73
 	qw422016.E().S(strings.ToLower(name))
-	//line scene.qtpl:70
+	//line scene.qtpl:73
 	qw422016.N().S(` *`)
-	//line scene.qtpl:70
-	qw422016.E().S(name)
-	//line scene.qtpl:70
+	//line scene.qtpl:73
+	qw422016.E().S(strings.Title(name))
+	//line scene.qtpl:73
 	qw422016.N().S(`Scene) ProcessCmd(cmd *scene_server.Cmd) {
 	switch cmd.Paramater.(type) {
 	}
 }
 `)
-//line scene.qtpl:74
+//line scene.qtpl:77
 }
 
-//line scene.qtpl:74
-func WriteGenerateScene(qq422016 qtio422016.Writer, name string) {
-	//line scene.qtpl:74
+//line scene.qtpl:77
+func WriteGenerateScene(qq422016 qtio422016.Writer, prefix string, name string) {
+	//line scene.qtpl:77
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line scene.qtpl:74
-	StreamGenerateScene(qw422016, name)
-	//line scene.qtpl:74
+	//line scene.qtpl:77
+	StreamGenerateScene(qw422016, prefix, name)
+	//line scene.qtpl:77
 	qt422016.ReleaseWriter(qw422016)
-//line scene.qtpl:74
+//line scene.qtpl:77
 }
 
-//line scene.qtpl:74
-func GenerateScene(name string) string {
-	//line scene.qtpl:74
+//line scene.qtpl:77
+func GenerateScene(prefix string, name string) string {
+	//line scene.qtpl:77
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line scene.qtpl:74
-	WriteGenerateScene(qb422016, name)
-	//line scene.qtpl:74
+	//line scene.qtpl:77
+	WriteGenerateScene(qb422016, prefix, name)
+	//line scene.qtpl:77
 	qs422016 := string(qb422016.B)
-	//line scene.qtpl:74
+	//line scene.qtpl:77
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line scene.qtpl:74
+	//line scene.qtpl:77
 	return qs422016
-//line scene.qtpl:74
+//line scene.qtpl:77
 }

@@ -1,0 +1,25 @@
+{% func GenerateDotConfigFile() %}
+---
+development:
+  server:
+    websocket:
+      http_url: websocket
+      ip_port: ":8080"
+    tcp_server:
+      ip_port: ":9998"
+  database:
+    user: root
+    password: 
+
+production:
+  server:
+    websocket:
+      http_url: websocket
+      ip_port: ":8080"
+    tcp_server:
+      ip_port: ":9998"
+  database:
+    user: root
+    password:
+
+{% endfunc  %}

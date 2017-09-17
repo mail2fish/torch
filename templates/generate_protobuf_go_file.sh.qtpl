@@ -1,4 +1,4 @@
 {% func GenerateProtobufGofile(pstructsPath string, protobufPath string, protobufFile string) %}#!/bin/bash
 echo GOPATH: ${GOPATH}
-protoc --gofast_out={%s pstructsPath %} --proto_path={%s protobufPath %} {%s protobufFile %}
+protoc --gogofaster_out={%s pstructsPath %} --proto_path={%s protobufPath %} {%s protobufFile %}
 {% endfunc %}

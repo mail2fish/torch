@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
+	"strings"
 	"sync"
 	"torch/templates"
 
@@ -13,7 +15,7 @@ import (
 )
 
 var newCmd = &cobra.Command{
-	Use:   "new app_path [-p prefix]",
+	Use:   "new game_project_name [-p prefix]",
 	Short: "It create a torch game server application.",
 	Long:  `It create the torch application in the $GOAPTH/src directory.`,
 	// Uncomment the following line if your bare application
@@ -21,14 +23,16 @@ var newCmd = &cobra.Command{
 	//	Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 {
-			if path.IsAbs(args[0]) {
-				fmt.Println("app_path:", args[0], " should be a relative path.")
+			re := regexp.MustCompile(`^\w+$`)
+
+			if !re.MatchString(args[0]) {
+				fmt.Println("game_project_name:", args[0], " is not a valid project name.")
 			} else {
 				newApp(args[0])
 			}
 
 		} else {
-			fmt.Println("No value provided for required arguments 'app_path'")
+			fmt.Println("No value provided for required arguments 'game_project_name'")
 			fmt.Println(cmd.Use)
 		}
 
@@ -54,7 +58,7 @@ func newApp(appPath string) {
 	generateServerCmd(appPath, gopathSrc)
 }
 
-func createDirectories(app_path string, gopathSrc string) {
+func createDirectories(game_project_name string, gopathSrc string) {
 	dirs := []string{
 		"bin",
 		"cmd/server/cmd",
@@ -71,7 +75,7 @@ func createDirectories(app_path string, gopathSrc string) {
 
 	for _, dir := range dirs {
 
-		appDir := path.Join(gopathSrc, app_path, dir)
+		appDir := path.Join(gopathSrc, game_project_name, dir)
 
 		if err := os.MkdirAll(appDir, 0755); err != nil {
 			fmt.Println("Failed to create directory: ", appDir, err.Error())
@@ -114,8 +118,9 @@ func generateServerCmd(appPath string, gopathSrc string) {
 
 	short := "The game server of " + appPath
 	long := `The command line tool for game server`
+	env_prefix := strings.ToUpper(prefix)
 
-	writeToFile(fpath, func(f *os.File) { templates.WriteGenerateRootCmd(f, appPath, short, long) }, 0644)
+	writeToFile(fpath, func(f *os.File) { templates.WriteGenerateRootCmd(f, appPath, short, long, env_prefix) }, 0644)
 
 	globalFilename := "global.go"
 	globalDir := "global"
@@ -187,6 +192,9 @@ func generateServerCmd(appPath string, gopathSrc string) {
 			path.Join(protobufDir, "*.proto"))
 	}, 0755)
 
+	fpath = path.Join(gopathSrc, appPath, fmt.Sprintf(".%s.yml", appPath))
+
+	writeToFile(fpath, func(f *os.File) { templates.WriteGenerateDotConfigFile(f) }, 0664)
 	generateProtobufGoFiles(path.Join(gopathSrc, appPath, "game", pstructsDir), protobufDir)
 
 }

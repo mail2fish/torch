@@ -1,6 +1,7 @@
 package game_server
 
 import (
+	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// WebSocketGameClient  Implementation of GameClienter
 type WebSocketGameClient struct {
 	mu          sync.RWMutex
 	id          bson.ObjectId
@@ -114,7 +116,6 @@ func NewWebSocketGameClient(c *websocket.Conn, sev *GameServer) *WebSocketGameCl
 		available: true,
 	}
 	ws.connSession = &ConnectionSession{gameClienter: ws, connectedAt: time.Now().UTC(), responser: SResponser.GameClienterResponser(ws)}
-	sev.AddGameClient(ws)
 
 	go ws.read()
 
@@ -127,7 +128,7 @@ func (ws *WebSocketGameClient) read() {
 			ws.conn.SetReadDeadline(time.Now().Add(6 * time.Minute))
 			if typ, bytes, err := ws.conn.ReadMessage(); err == nil {
 				if typ == websocket.BinaryMessage {
-
+					fmt.Println("TEST TTTT")
 					ws.binReader.Append(bytes)
 					for _, pack := range ws.binReader.Read() {
 						cr := &ClientRequest{Package: pack, Client: ws}

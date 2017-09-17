@@ -123,7 +123,7 @@ func doCmd(cmd string, args []string) {
 
 		writeToFile(fpath, 
             func(f *os.File) { 
-                templates.WriteGenerateScene(f, args[0]) }, 0644)
+                templates.WriteGenerateScene(f,prefix, args[0]) }, 0644)
     case "default":
         fmt.Println("Could not found that command: "+cmd)
 
@@ -132,8 +132,24 @@ func doCmd(cmd string, args []string) {
 
 type templateWrite func(*os.File)
 
+var overwriteFlag string
+
 func writeToFile(fpath string, fun templateWrite, mode os.FileMode) {
-	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_CREATE, mode)
+		if _, err := os.Stat(fpath); !os.IsNotExist(err) {
+			fmt.Println("The file path: ", fpath, " is exist. Do you want to overwrite it? (n/y)")
+			if _, err := fmt.Scanf("%s", &overwriteFlag); err != nil {
+				fmt.Printf("%s\n", err)
+				return
+			}
+
+			switch overwriteFlag {
+			case "n", "N":
+				return
+
+			}
+		}
+
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
 	defer f.Close()
 	if err != nil {
 		fmt.Println("Failed to generate the file:", fpath)
@@ -166,31 +182,31 @@ func execCmd(cmd string, wg *sync.WaitGroup) {
 }
 
 `)
-//line generator_cmd.qtpl:122
+//line generator_cmd.qtpl:138
 }
 
-//line generator_cmd.qtpl:122
+//line generator_cmd.qtpl:138
 func WriteGenerateGeneratorCmd(qq422016 qtio422016.Writer, handlersDir string, appPath string, scenesDir string, prefix string) {
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	StreamGenerateGeneratorCmd(qw422016, handlersDir, appPath, scenesDir, prefix)
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	qt422016.ReleaseWriter(qw422016)
-//line generator_cmd.qtpl:122
+//line generator_cmd.qtpl:138
 }
 
-//line generator_cmd.qtpl:122
+//line generator_cmd.qtpl:138
 func GenerateGeneratorCmd(handlersDir string, appPath string, scenesDir string, prefix string) string {
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	WriteGenerateGeneratorCmd(qb422016, handlersDir, appPath, scenesDir, prefix)
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	qs422016 := string(qb422016.B)
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line generator_cmd.qtpl:122
+	//line generator_cmd.qtpl:138
 	return qs422016
-//line generator_cmd.qtpl:122
+//line generator_cmd.qtpl:138
 }

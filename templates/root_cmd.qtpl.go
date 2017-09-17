@@ -18,7 +18,7 @@ var (
 )
 
 //line root_cmd.qtpl:1
-func StreamGenerateRootCmd(qw422016 *qt422016.Writer, cmd string, short string, long string) {
+func StreamGenerateRootCmd(qw422016 *qt422016.Writer, cmd string, short string, long, prefix string) {
 	//line root_cmd.qtpl:1
 	qw422016.N().S(`
 
@@ -95,12 +95,18 @@ func initConfig() {
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
-
+	viper.SetEnvPrefix("`)
+	//line root_cmd.qtpl:58
+	qw422016.E().S(prefix)
+	//line root_cmd.qtpl:58
+	qw422016.N().S(`")
+	viper.BindEnv("ENV")
 	viper.SetConfigName(".`)
-	//line root_cmd.qtpl:59
+	//line root_cmd.qtpl:60
 	qw422016.E().S(cmd)
-	//line root_cmd.qtpl:59
+	//line root_cmd.qtpl:60
 	qw422016.N().S(`") // name of config file (without extension)
+	viper.AddConfigPath(".")               // optionally look for config in the working directory
 	viper.AddConfigPath("$HOME")  // adding home directory as first search path
 	viper.AutomaticEnv()          // read in environment variables that match
 
@@ -110,31 +116,31 @@ func initConfig() {
 	}
 }
 `)
-//line root_cmd.qtpl:68
+//line root_cmd.qtpl:70
 }
 
-//line root_cmd.qtpl:68
-func WriteGenerateRootCmd(qq422016 qtio422016.Writer, cmd string, short string, long string) {
-	//line root_cmd.qtpl:68
+//line root_cmd.qtpl:70
+func WriteGenerateRootCmd(qq422016 qtio422016.Writer, cmd string, short string, long, prefix string) {
+	//line root_cmd.qtpl:70
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line root_cmd.qtpl:68
-	StreamGenerateRootCmd(qw422016, cmd, short, long)
-	//line root_cmd.qtpl:68
+	//line root_cmd.qtpl:70
+	StreamGenerateRootCmd(qw422016, cmd, short, long, prefix)
+	//line root_cmd.qtpl:70
 	qt422016.ReleaseWriter(qw422016)
-//line root_cmd.qtpl:68
+//line root_cmd.qtpl:70
 }
 
-//line root_cmd.qtpl:68
-func GenerateRootCmd(cmd string, short string, long string) string {
-	//line root_cmd.qtpl:68
+//line root_cmd.qtpl:70
+func GenerateRootCmd(cmd string, short string, long, prefix string) string {
+	//line root_cmd.qtpl:70
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line root_cmd.qtpl:68
-	WriteGenerateRootCmd(qb422016, cmd, short, long)
-	//line root_cmd.qtpl:68
+	//line root_cmd.qtpl:70
+	WriteGenerateRootCmd(qb422016, cmd, short, long, prefix)
+	//line root_cmd.qtpl:70
 	qs422016 := string(qb422016.B)
-	//line root_cmd.qtpl:68
+	//line root_cmd.qtpl:70
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line root_cmd.qtpl:68
+	//line root_cmd.qtpl:70
 	return qs422016
-//line root_cmd.qtpl:68
+//line root_cmd.qtpl:70
 }

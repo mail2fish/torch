@@ -22,7 +22,7 @@ func StreamGenerateProtobufGofile(qw422016 *qt422016.Writer, pstructsPath string
 	//line generate_protobuf_go_file.sh.qtpl:1
 	qw422016.N().S(`#!/bin/bash
 echo GOPATH: ${GOPATH}
-protoc --gofast_out=`)
+protoc --gogofaster_out=`)
 	//line generate_protobuf_go_file.sh.qtpl:3
 	qw422016.E().S(pstructsPath)
 	//line generate_protobuf_go_file.sh.qtpl:3

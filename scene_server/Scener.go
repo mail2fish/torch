@@ -14,7 +14,7 @@ type Scener interface {
 	Id() bson.ObjectId
 
 	// Start is called to start  running GameObject in the Scener
-	Start(game_server.Responser, ...interface{}) (bson.ObjectId, error)
+	Start(game_server.Responser, ...interface{}) (sceneID bson.ObjectId, tickInterval time.Duration, err error)
 
 	// End is called to stop the Scener
 	End(game_server.Responser) (bool, error)
@@ -46,6 +46,7 @@ type scene struct {
 	chCmd     chan *Cmd
 	chSignal  chan int
 	chTick    chan time.Time
+	quitChan  chan struct{}
 }
 
 func (s *scene) pushCmd(cmd *Cmd) {
@@ -76,11 +77,13 @@ func (s *scene) running() bool {
 	}
 
 }
-func (s *scene) tickLoop() {
+func (s *scene) tickLoop(interval time.Duration) {
 	for s.running() && !s.scener.WhetherEndScene() {
 		select {
-		case <-time.After(100 * time.Millisecond):
+		case <-time.After(interval):
 			s.chTick <- time.Now()
+		case <-s.quitChan:
+			return
 
 		}
 	}
@@ -109,7 +112,7 @@ func (s *scene) loop() {
 	}
 }
 func startScene(sr Scener, rp game_server.Responser, params ...interface{}) (*scene, error) {
-	id, err := sr.Start(rp, params...)
+	id, interval, err := sr.Start(rp, params...)
 	if err == nil {
 		scene := &scene{scener: sr,
 			startedAt: time.Now().UTC(),
@@ -118,10 +121,11 @@ func startScene(sr Scener, rp game_server.Responser, params ...interface{}) (*sc
 			chCmd:     make(chan *Cmd),
 			chSignal:  make(chan int),
 			chTick:    make(chan time.Time),
+			quitChan:  make(chan struct{}),
 		}
 
 		go scene.loop()
-		go scene.tickLoop()
+		go scene.tickLoop(interval)
 		return scene, nil
 
 	}

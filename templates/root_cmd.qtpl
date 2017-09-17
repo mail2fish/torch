@@ -1,4 +1,4 @@
-{% func GenerateRootCmd(cmd string,short string,long string) %}
+{% func GenerateRootCmd(cmd string,short string,long, prefix string) %}
 
 
 package cmd
@@ -55,8 +55,10 @@ func initConfig() {
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
-
+	viper.SetEnvPrefix("{%s prefix %}")
+	viper.BindEnv("ENV")
 	viper.SetConfigName(".{%s cmd %}") // name of config file (without extension)
+	viper.AddConfigPath(".")               // optionally look for config in the working directory
 	viper.AddConfigPath("$HOME")  // adding home directory as first search path
 	viper.AutomaticEnv()          // read in environment variables that match
 
