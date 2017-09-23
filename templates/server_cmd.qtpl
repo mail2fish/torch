@@ -11,7 +11,6 @@ import (
 {% endif %}
 	"torch/game_server"
 	"torch/log_handler"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -60,6 +59,8 @@ func startServer(){
 	log.RegisterHandler(cLog, log.DebugLevel, log.InfoLevel)
 	log.RegisterHandler(&log_handler.PlayLogHandler{}, log.NoticeLevel)
 
+	utilities.InitEnv()
+
 	var wg sync.WaitGroup
 
 {% if len(prefix)>0 %}
@@ -72,29 +73,29 @@ func startServer(){
 
 {% endif %}
 	
+	httpIpPort := utilities.GetConfigString("server.http.ip_port")
+	if len(httpIpPort) > 0 {
+		r := gin.Default()
+		wsURL := utilities.GetConfigString("server.http.websocket_url")
+		log.Info("Listening HTTTP server on port:",httpIpPort)
 
-	r := gin.Default()
+		if len(wsURL) > 0 {
+			log.Info("Listening WebScokcet on url:",wsURL)
+			{% if len(prefix)>0 %}
+				
+				game_server.StartWebSocketServer({%s prefix %}_global.GS,r,wsURL,4096,4096)			
+				
+			{% else %}
 
-	r.GET("/{%s basename %}_socket", func(c *gin.Context) {
-		func(w http.ResponseWriter, r *http.Request) {
-			conn, err := wsupgrader.Upgrade(w, r, nil)
+				game_server.StartWebSocketServer(global.GS,r,wsURL,4096,4096)
+			
+			{% endif %}
+		}
+		log.Info("HTTTP server started")
+		r.Run(httpIpPort)
+	}
 
-			if err != nil {
-				fmt.Println("Failed to set websocket upgrade: %+v", err)
-				return
-			}
-{% if len(prefix)>0 %}
 
-			game_server.NewWebSocketGameClient(conn, {%s prefix %}_global.GS)
-{% else %}
-			game_server.NewWebSocketGameClient(conn, global.GS)
-
-{% endif %}
-
-		}(c.Writer, c.Request)
-	})
-
-	r.Run(":8088")
 	wg.Wait()
 
 }

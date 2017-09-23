@@ -55,8 +55,11 @@ func initConfig() {
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
+	
 	viper.SetEnvPrefix("{%s prefix %}")
 	viper.BindEnv("ENV")
+	viper.SetDefault("ENV", "development")
+
 	viper.SetConfigName(".{%s cmd %}") // name of config file (without extension)
 	viper.AddConfigPath(".")               // optionally look for config in the working directory
 	viper.AddConfigPath("$HOME")  // adding home directory as first search path

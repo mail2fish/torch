@@ -11,9 +11,7 @@ import (
 // StartWebSocketServer 启动 WebScokcet 服务器
 // webSocketURL 是 websocket client 建立连接时的那个 http 相对路径，类似: /ws_connet
 // ipAndPort 是服务器的监听地址和端口，可以简单写成 :8080
-func StartWebSocketServer(gameServer *GameServer, ipAndPort string, webSocketURL string, readBufferSize int, writeBufferSize int) {
-
-	r := gin.Default()
+func StartWebSocketServer(gameServer *GameServer, r *gin.Engine, webSocketURL string, readBufferSize int, writeBufferSize int) {
 
 	var wsupgrader = websocket.Upgrader{
 		ReadBufferSize:  readBufferSize,
@@ -35,6 +33,5 @@ func StartWebSocketServer(gameServer *GameServer, ipAndPort string, webSocketURL
 
 		}(c.Writer, c.Request)
 	})
-	r.Run(ipAndPort)
 
 }

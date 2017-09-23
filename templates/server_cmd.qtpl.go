@@ -69,7 +69,6 @@ import (
 	qw422016.N().S(`
 	"torch/game_server"
 	"torch/log_handler"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -114,25 +113,25 @@ func startServer(){
 
 	var err error
 `)
-	//line server_cmd.qtpl:50
+	//line server_cmd.qtpl:49
 	if len(prefix) > 0 {
-		//line server_cmd.qtpl:50
+		//line server_cmd.qtpl:49
 		qw422016.N().S(`
 	if `)
-		//line server_cmd.qtpl:51
+		//line server_cmd.qtpl:50
 		qw422016.E().S(prefix)
-		//line server_cmd.qtpl:51
+		//line server_cmd.qtpl:50
 		qw422016.N().S(`_global.BDB, err = buntdb.Open(":memory:"); err != nil {
 `)
-		//line server_cmd.qtpl:52
+		//line server_cmd.qtpl:51
 	} else {
-		//line server_cmd.qtpl:52
+		//line server_cmd.qtpl:51
 		qw422016.N().S(`
 	if global.BDB, err = buntdb.Open(":memory:"); err != nil {
 `)
-		//line server_cmd.qtpl:54
+		//line server_cmd.qtpl:53
 	}
-	//line server_cmd.qtpl:54
+	//line server_cmd.qtpl:53
 	qw422016.N().S(`
 		panic("Can not create buntdb")
 	}
@@ -142,112 +141,110 @@ func startServer(){
 	log.RegisterHandler(cLog, log.DebugLevel, log.InfoLevel)
 	log.RegisterHandler(&log_handler.PlayLogHandler{}, log.NoticeLevel)
 
+	utilities.InitEnv()
+
 	var wg sync.WaitGroup
 
 `)
-	//line server_cmd.qtpl:65
+	//line server_cmd.qtpl:66
 	if len(prefix) > 0 {
-		//line server_cmd.qtpl:65
+		//line server_cmd.qtpl:66
 		qw422016.N().S(`
 	`)
-		//line server_cmd.qtpl:66
+		//line server_cmd.qtpl:67
 		qw422016.E().S(prefix)
-		//line server_cmd.qtpl:66
+		//line server_cmd.qtpl:67
 		qw422016.N().S(`_global.GS = game_server.NewGameServer(&wg)
 	`)
-		//line server_cmd.qtpl:67
+		//line server_cmd.qtpl:68
 		qw422016.E().S(prefix)
-		//line server_cmd.qtpl:67
+		//line server_cmd.qtpl:68
 		qw422016.N().S(`_handlers.BindRequestHandlers()
 
 `)
-		//line server_cmd.qtpl:69
+		//line server_cmd.qtpl:70
 	} else {
-		//line server_cmd.qtpl:69
+		//line server_cmd.qtpl:70
 		qw422016.N().S(`
 	global.GS = game_server.NewGameServer(&wg)
 	handlers.BindRequestHandlers()
 
 `)
-		//line server_cmd.qtpl:73
+		//line server_cmd.qtpl:74
 	}
-	//line server_cmd.qtpl:73
+	//line server_cmd.qtpl:74
 	qw422016.N().S(`
 	
+	httpIpPort := utilities.GetConfigString("server.http.ip_port")
+	if len(httpIpPort) > 0 {
+		r := gin.Default()
+		wsURL := utilities.GetConfigString("server.http.websocket_url")
+		log.Info("Listening HTTTP server on port:",httpIpPort)
 
-	r := gin.Default()
-
-	r.GET("/`)
-	//line server_cmd.qtpl:78
-	qw422016.E().S(basename)
-	//line server_cmd.qtpl:78
-	qw422016.N().S(`_socket", func(c *gin.Context) {
-		func(w http.ResponseWriter, r *http.Request) {
-			conn, err := wsupgrader.Upgrade(w, r, nil)
-
-			if err != nil {
-				fmt.Println("Failed to set websocket upgrade: %+v", err)
-				return
-			}
-`)
-	//line server_cmd.qtpl:86
+		if len(wsURL) > 0 {
+			log.Info("Listening WebScokcet on url:",wsURL)
+			`)
+	//line server_cmd.qtpl:84
 	if len(prefix) > 0 {
+		//line server_cmd.qtpl:84
+		qw422016.N().S(`
+				
+				game_server.StartWebSocketServer(`)
 		//line server_cmd.qtpl:86
-		qw422016.N().S(`
-
-			game_server.NewWebSocketGameClient(conn, `)
-		//line server_cmd.qtpl:88
 		qw422016.E().S(prefix)
+		//line server_cmd.qtpl:86
+		qw422016.N().S(`_global.GS,r,wsURL,4096,4096)			
+				
+			`)
 		//line server_cmd.qtpl:88
-		qw422016.N().S(`_global.GS)
-`)
-		//line server_cmd.qtpl:89
 	} else {
-		//line server_cmd.qtpl:89
+		//line server_cmd.qtpl:88
 		qw422016.N().S(`
-			game_server.NewWebSocketGameClient(conn, global.GS)
 
-`)
+				game_server.StartWebSocketServer(global.GS,r,wsURL,4096,4096)
+			
+			`)
 		//line server_cmd.qtpl:92
 	}
 	//line server_cmd.qtpl:92
 	qw422016.N().S(`
+		}
+		log.Info("HTTTP server started")
+		r.Run(httpIpPort)
+	}
 
-		}(c.Writer, c.Request)
-	})
 
-	r.Run(":8088")
 	wg.Wait()
 
 }
 
 
 `)
-//line server_cmd.qtpl:103
+//line server_cmd.qtpl:104
 }
 
-//line server_cmd.qtpl:103
+//line server_cmd.qtpl:104
 func WriteGenerateServerCmd(qq422016 qtio422016.Writer, prefix string, appPath string, basename string) {
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	StreamGenerateServerCmd(qw422016, prefix, appPath, basename)
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	qt422016.ReleaseWriter(qw422016)
-//line server_cmd.qtpl:103
+//line server_cmd.qtpl:104
 }
 
-//line server_cmd.qtpl:103
+//line server_cmd.qtpl:104
 func GenerateServerCmd(prefix string, appPath string, basename string) string {
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	WriteGenerateServerCmd(qb422016, prefix, appPath, basename)
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	qs422016 := string(qb422016.B)
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line server_cmd.qtpl:103
+	//line server_cmd.qtpl:104
 	return qs422016
-//line server_cmd.qtpl:103
+//line server_cmd.qtpl:104
 }

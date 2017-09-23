@@ -24,9 +24,9 @@ func StreamGenerateDotConfigFile(qw422016 *qt422016.Writer) {
 ---
 development:
   server:
-    websocket:
-      http_url: websocket
+    http:
       ip_port: ":8080"
+      websocket_url: websocket
     tcp_server:
       ip_port: ":9998"
   database:

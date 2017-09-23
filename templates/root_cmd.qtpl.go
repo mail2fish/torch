@@ -95,16 +95,19 @@ func initConfig() {
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
+	
 	viper.SetEnvPrefix("`)
-	//line root_cmd.qtpl:58
+	//line root_cmd.qtpl:59
 	qw422016.E().S(prefix)
-	//line root_cmd.qtpl:58
+	//line root_cmd.qtpl:59
 	qw422016.N().S(`")
 	viper.BindEnv("ENV")
+	viper.SetDefault("ENV", "development")
+
 	viper.SetConfigName(".`)
-	//line root_cmd.qtpl:60
+	//line root_cmd.qtpl:63
 	qw422016.E().S(cmd)
-	//line root_cmd.qtpl:60
+	//line root_cmd.qtpl:63
 	qw422016.N().S(`") // name of config file (without extension)
 	viper.AddConfigPath(".")               // optionally look for config in the working directory
 	viper.AddConfigPath("$HOME")  // adding home directory as first search path
@@ -116,31 +119,31 @@ func initConfig() {
 	}
 }
 `)
-//line root_cmd.qtpl:70
+//line root_cmd.qtpl:73
 }
 
-//line root_cmd.qtpl:70
+//line root_cmd.qtpl:73
 func WriteGenerateRootCmd(qq422016 qtio422016.Writer, cmd string, short string, long, prefix string) {
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	StreamGenerateRootCmd(qw422016, cmd, short, long, prefix)
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	qt422016.ReleaseWriter(qw422016)
-//line root_cmd.qtpl:70
+//line root_cmd.qtpl:73
 }
 
-//line root_cmd.qtpl:70
+//line root_cmd.qtpl:73
 func GenerateRootCmd(cmd string, short string, long, prefix string) string {
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	WriteGenerateRootCmd(qb422016, cmd, short, long, prefix)
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	qs422016 := string(qb422016.B)
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line root_cmd.qtpl:70
+	//line root_cmd.qtpl:73
 	return qs422016
-//line root_cmd.qtpl:70
+//line root_cmd.qtpl:73
 }
