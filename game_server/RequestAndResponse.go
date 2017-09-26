@@ -17,13 +17,13 @@ const (
 
 // START_CHAR(1 byte) - Handler Id (2 byte) -  Version(1 byte) - Data size(4 byte) - Data - CRC(4 byte) - END_CHAR
 
-type BinPackage struct {
+type ResponseData struct {
 	HandlerId uint16
 	Version   uint8
 	Data      []byte
 }
 
-func (p *BinPackage) ToBytes() (data []byte) {
+func (p *ResponseData) ToBytes() (data []byte) {
 	var list []interface{}
 
 	list = append(list, START_CHAR)
@@ -51,7 +51,14 @@ func (p *BinPackage) ToBytes() (data []byte) {
 	return result
 }
 
-func BytesToBinPackage(byteSlice []byte) (pack *BinPackage, index uint32, err error) {
+// START_CHAR(1 byte) - Handler Id (2 byte) -  Version(1 byte) - Data size(4 byte) - Data - CRC(4 byte) - END_CHAR
+type RequestData struct {
+	HandlerId uint16
+	Version   uint8
+	Data      interface{}
+}
+
+func BytesToRequestData(s *GameServer, byteSlice []byte) (pack *RequestData, index uint32, err error) {
 
 	minimalPackageSize := uint32(12)
 	length := uint32(len(byteSlice))
@@ -114,13 +121,17 @@ func BytesToBinPackage(byteSlice []byte) (pack *BinPackage, index uint32, err er
 			// 	continue
 			// }
 
-			cloneData := make([]byte, len(data))
-			copy(cloneData, data)
-			pack = &BinPackage{
-				HandlerId: handerId,
-				Version:   version,
-				Data:      cloneData}
-			return pack, crcEnd + 1, nil
+			// cloneData := make([]byte, len(data))
+			// copy(cloneData, data)
+
+			if param, err := s.getRequestParamater(handerId, data); err == nil {
+				pack = &RequestData{
+					HandlerId: handerId,
+					Version:   version,
+					Data:      param}
+				return pack, crcEnd + 1, nil
+			}
+
 		}
 	}
 	return nil, 0, errors.New("No binpack exist. ")

@@ -1,22 +1,20 @@
 package game_server
 
-import "sync"
-
-type BinPackageReader struct {
-	bytes []byte
-	rwMU  sync.RWMutex
+// 这里 bytes 的内存使用可以优化，应该复用一个 Array
+type RequestDataReader struct {
+	gameServer *GameServer
+	bytes      []byte
 }
 
-func (r *BinPackageReader) Read() []*BinPackage {
-	r.rwMU.RLock()
-	defer r.rwMU.RUnlock()
-	list := []*BinPackage{}
-	var pack *BinPackage
+func (r *RequestDataReader) Read() []*RequestData {
+
+	list := []*RequestData{}
+	var pack *RequestData
 	var i uint32
 	var err error
 
 	for len(r.bytes) > 13 && err == nil {
-		pack, i, err = BytesToBinPackage(r.bytes)
+		pack, i, err = BytesToRequestData(r.gameServer, r.bytes)
 		if err == nil {
 			list = append(list, pack)
 			r.bytes = r.bytes[i:]
@@ -26,12 +24,11 @@ func (r *BinPackageReader) Read() []*BinPackage {
 
 	return list
 }
-func (r *BinPackageReader) Append(bytes []byte) {
-	r.rwMU.Lock()
-	defer r.rwMU.Unlock()
+func (r *RequestDataReader) Append(bytes []byte) {
+
 	r.bytes = append(r.bytes, bytes...)
 }
 
-func NewBinPackageReader() *BinPackageReader {
-	return &BinPackageReader{bytes: []byte{}}
+func NewRequestDataReader(s *GameServer) *RequestDataReader {
+	return &RequestDataReader{bytes: []byte{}}
 }

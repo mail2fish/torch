@@ -1,6 +1,6 @@
 package game_server
 
 type ClientRequest struct {
-	Package *BinPackage
+	Package *RequestData
 	Client  GameClienter
 }

@@ -94,14 +94,14 @@ func (gr *GameClienterResponser) loopWrite() {
 			continue
 		}
 
-		var pack BinPackage
+		var pack ResponseData
 
 		dataSending, err := proto.Marshal(result.(proto.Message))
 		if err != nil {
 			log.Error("Marshal proto error  ", err)
 			continue
 		}
-		pack = BinPackage{HandlerId: rpStruct.Id(), Version: 1, Data: dataSending}
+		pack = ResponseData{HandlerId: rpStruct.Id(), Version: 1, Data: dataSending}
 
 		bytesData := pack.ToBytes()
 		gr.gc.Write(bytesData)

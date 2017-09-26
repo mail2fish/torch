@@ -89,22 +89,18 @@ func (s *GameServer) Deliver() {
 			session := rq.Client.ConnectionSession()
 			pack := rq.Package
 
-			if param, err := s.getRequestParamater(pack.HandlerId, pack.Data); err == nil {
-				handerId := pack.HandlerId
+			handerId := pack.HandlerId
 
-				if rH, ok := s.requests[handerId]; ok {
-					handler := rH.Fun
-					sn, rs := session.StartRequest(rH.Name)
-					defer session.EndRequest(sn)
+			if rH, ok := s.requests[handerId]; ok {
+				handler := rH.Fun
+				sn, rs := session.StartRequest(rH.Name)
+				defer session.EndRequest(sn)
 
-					log.Info("Dispatch a pack to handler: ", handerId, " name: ", s.requests[handerId].Name)
+				log.Info("Dispatch a pack to handler: ", handerId, " name: ", s.requests[handerId].Name)
 
-					middlewareIndexer := &MiddlewareIndexer{middlewares: s.middlewares, index: 0}
-					middlewareIndexer.Call(rs, session.Responser(), rq.Package, param, handler)
-					// middlewareIndexer.Call(nil, rq.Client, rq.Package, param, handler)
-				} else {
-					log.Notice("No Handler for the handle id: ", handerId)
-				}
+				middlewareIndexer := &MiddlewareIndexer{middlewares: s.middlewares, index: 0}
+				middlewareIndexer.Call(rs, session.Responser(), rq.Package, pack.Data, handler)
+				// middlewareIndexer.Call(nil, rq.Client, rq.Package, param, handler)
 
 			}
 

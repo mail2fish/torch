@@ -3,7 +3,7 @@ package game_server
 import "reflect"
 
 type Middlewarer interface {
-	Call(*MiddlewareIndexer, *RequestSession, Responser, *BinPackage, interface{}) error
+	Call(*MiddlewareIndexer, *RequestSession, Responser, *RequestData, interface{}) error
 }
 
 type MiddlewareIndexer struct {
@@ -13,7 +13,7 @@ type MiddlewareIndexer struct {
 	hasCalled   bool
 }
 
-func (m *MiddlewareIndexer) Call(s *RequestSession, rp Responser, pack *BinPackage, param interface{}, handleFun reflect.Value) error {
+func (m *MiddlewareIndexer) Call(s *RequestSession, rp Responser, pack *RequestData, param interface{}, handleFun reflect.Value) error {
 	m.handlerFun = handleFun
 
 	err := NextMiddleware(m, s, rp, pack, param)
@@ -21,7 +21,7 @@ func (m *MiddlewareIndexer) Call(s *RequestSession, rp Responser, pack *BinPacka
 	return err
 
 }
-func NextMiddleware(m *MiddlewareIndexer, s *RequestSession, rp Responser, pack *BinPackage, param interface{}) error {
+func NextMiddleware(m *MiddlewareIndexer, s *RequestSession, rp Responser, pack *RequestData, param interface{}) error {
 	var err error
 	if m.index < len(m.middlewares) {
 		fun := (m.middlewares)[m.index]

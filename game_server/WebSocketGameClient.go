@@ -15,14 +15,14 @@ import (
 
 // WebSocketGameClient  Implementation of GameClienter
 type WebSocketGameClient struct {
-	mu          sync.RWMutex
-	id          bson.ObjectId
-	role        GameRole
-	binReader   *BinPackageReader
-	conn        *websocket.Conn
-	sev         *GameServer
-	connSession *ConnectionSession
-	available   bool
+	mu                sync.RWMutex
+	id                bson.ObjectId
+	role              GameRole
+	requestDataReader *RequestDataReader
+	conn              *websocket.Conn
+	sev               *GameServer
+	connSession       *ConnectionSession
+	available         bool
 }
 
 func (ws *WebSocketGameClient) Close() {
@@ -30,7 +30,7 @@ func (ws *WebSocketGameClient) Close() {
 	defer ws.mu.Unlock()
 	ws.available = false
 
-	ws.binReader = nil
+	ws.requestDataReader = nil
 	ws.sev = nil
 
 	if err := ws.conn.Close(); err != nil {
@@ -109,11 +109,11 @@ func (ws *WebSocketGameClient) Available() bool {
 func NewWebSocketGameClient(c *websocket.Conn, sev *GameServer) *WebSocketGameClient {
 
 	ws := &WebSocketGameClient{
-		id:        bson.NewObjectId(),
-		conn:      c,
-		sev:       sev,
-		binReader: NewBinPackageReader(),
-		available: true,
+		id:                bson.NewObjectId(),
+		conn:              c,
+		sev:               sev,
+		requestDataReader: NewRequestDataReader(sev),
+		available:         true,
 	}
 	ws.connSession = &ConnectionSession{gameClienter: ws, connectedAt: time.Now().UTC(), responser: SResponser.GameClienterResponser(ws)}
 
@@ -129,8 +129,8 @@ func (ws *WebSocketGameClient) read() {
 			if typ, bytes, err := ws.conn.ReadMessage(); err == nil {
 				if typ == websocket.BinaryMessage {
 					fmt.Println("TEST TTTT")
-					ws.binReader.Append(bytes)
-					for _, pack := range ws.binReader.Read() {
+					ws.requestDataReader.Append(bytes)
+					for _, pack := range ws.requestDataReader.Read() {
 						cr := &ClientRequest{Package: pack, Client: ws}
 						ws.sev.Post(cr)
 					}
